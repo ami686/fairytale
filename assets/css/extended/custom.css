@@ -1,0 +1,104 @@
+main.main {
+  max-width: 100% !important;
+  padding-top: 0 !important;
+}
+body {
+  background: #ffffff !important;
+}
+.menu-item {
+  position: relative;
+}
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  min-width: 140px;
+  padding: 6px 0;
+  z-index: 100;
+  list-style: none;
+  margin: 0;
+}
+.dropdown-menu li {
+  margin: 0;
+}
+.dropdown-menu a {
+  display: block;
+  padding: 8px 16px;
+  white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+}
+.dropdown-menu a:hover {
+  background: #f4f5f7;
+}
+@media (hover: hover) {
+  .menu-item.has-dropdown:hover .dropdown-menu {
+    display: block;
+  }
+}
+.menu-item.has-dropdown.open .dropdown-menu {
+  display: block;
+}
+.menu,
+.header-nav {
+  overflow: visible !important;
+}
+.dropdown-menu li {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+.dropdown-menu a {
+  padding: 6px 16px !important;
+}
+
+/* ===== 修复下拉菜单被主题 flex 样式拉成横向多列的问题 ===== */
+.dropdown-menu {
+  display: none !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  width: max-content;
+}
+.menu-item.has-dropdown:hover .dropdown-menu,
+.menu-item.has-dropdown.open .dropdown-menu {
+  display: flex !important;
+}
+
+/* ===== 两栏布局骨架(首页/分类页/文章页共用) ===== */
+.page-layout {
+  display: flex;
+  gap: 20px;
+  padding: 10px 2px;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: flex-start;
+}
+.main-content {
+  flex: 3;
+  min-width: 0;
+}
+.sidebar {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+.sidebar-box {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  max-height: 300px;
+  overflow: auto;
+}
+@media (max-width: 768px) {
+  .page-layout {
+    flex-direction: column;
+  }
+  .sidebar {
+    max-width: 100%;
+  }
+}

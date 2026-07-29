@@ -1,0 +1,18 @@
+{{- $depth := .depth }}
+{{- $maxDepth := 2 }}
+{{/*
+  maxDepth 控制菜单在"目录结构"部分最多显示几层子级：
+  1 = 只显示到第二层（如：短篇 → 童话，格林童话不显示）
+  2 = 显示到第三层（如：短篇 → 童话 → 格林童话，当前设置）
+  3 = 显示到第四层（如：短篇 → 童话 → 格林童话 → 格林童话名篇）
+*/}}
+{{- range .sections }}
+<li class="menu-item{{ if and .Sections (lt $depth $maxDepth) }} has-dropdown{{ end }}">
+    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    {{- if and .Sections (lt $depth $maxDepth) }}
+    <ul class="dropdown-menu">
+        {{- partial "section-item.html" (dict "sections" .Sections "depth" (add $depth 1)) }}
+    </ul>
+    {{- end }}
+</li>
+{{- end }}
