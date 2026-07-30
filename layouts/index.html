@@ -4,6 +4,7 @@
   background: #f4f5f7;
   border-radius: 8px;
   padding: 7px;
+  min-width: 0;   /* 关键新增:防止内部长文字撑宽整个主内容区 */
 }
 
 .home-grid {
@@ -39,7 +40,6 @@
   text-decoration: none;
 }
 .card-title.no-link {
-  /* 无链接的标题(比如"最新文章")也需要能省略 */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
