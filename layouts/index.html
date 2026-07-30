@@ -4,7 +4,7 @@
   background: #f4f5f7;
   border-radius: 8px;
   padding: 7px;
-  min-width: 0;   /* 关键新增:防止内部长文字撑宽整个主内容区 */
+  min-width: 0;
 }
 
 .home-grid {
@@ -81,6 +81,10 @@
   margin-left: 6px;
   vertical-align: middle;
   flex-shrink: 0;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 @media (max-width: 1024px) {
   .home-grid {
