@@ -4,6 +4,7 @@
   background: #f4f5f7;
   border-radius: 8px;
   padding: 7px;
+  margin: 20px; 
 }
 
 .home-grid {
@@ -71,6 +72,12 @@
 @media (max-width: 1024px) {
   .home-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* 加上下面这段：专门控制手机端距离 */
+@media (max-width: 768px) {
+  .main-content {
+    margin: 0px;5px;0px;5px/* 调整这里的数值（如 5px、10px、15px） */
   }
 }
 </style>
