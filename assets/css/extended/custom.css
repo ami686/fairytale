@@ -108,3 +108,26 @@ body {
     padding-right: 0px !important;
   }
 }
+@media (max-width:768px){
+  .logo a{
+    font-size:18px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-title {
+    font-size: 15px !important;
+  }
+
+  .more-link {
+    font-size: 12px !important;
+  }
+
+  .article-list a {
+    font-size: 14px !important;
+  }
+
+  .category-tag {
+    font-size: 12px !important;
+  }
+}
