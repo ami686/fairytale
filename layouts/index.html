@@ -6,58 +6,6 @@
   padding: 7px;
 }
 
-.home-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 7px;
-}
-.category-card {
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 15px 1px 6px 10px;
-  min-width: 0;
-}
-.card-title {
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
-  font-size: 18px;
-}
-.card-title a:first-child {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-  flex: 1;
-}
-.more-link {
-  font-size: 14px;
-  font-weight: 400;
-  color: #5b7c99;
-  text-decoration: none;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.more-link:hover { text-decoration: underline; }
-.article-list { list-style: none; padding: 0; margin: 0; }
-.article-list li {
-  margin: 8px 0;
-  display: flex;
-  align-items: center;
-}
-.article-list a {
-  color: #5b7c99;
-  text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-  flex: 1;
-  min-width: 0;
-  font-size: 16px;
-}
 .category-tag {
   display: inline-block;
   background: #e8eaed;
@@ -69,12 +17,6 @@
   vertical-align: middle;
   flex-shrink: 0;
 }
-@media (max-width: 1024px) {
-  .home-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 </style>
 
 <div class="page-layout">
