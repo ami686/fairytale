@@ -11,16 +11,25 @@
   background: #e8eaed;
   color: #666;
   font-size: 12px;
-  padding: 2px 8px;
+  padding: 0px 2px;
   border-radius: 4px;
   margin-left: 6px;
   vertical-align: middle;
 
-  flex: 0 1 auto;
+  flex-shrink: 0;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@media (max-width: 1023px) {
+  .category-tag {
+    max-width: 30%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 </style>
 
