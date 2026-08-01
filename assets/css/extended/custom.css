@@ -173,7 +173,7 @@ body {
 .article-list a:not(.category-tag) {
   display: block;
   flex: 0 1 auto;
-  max-width: 75%;
+
   min-width: 0;
   color: #5b7c99;
   text-decoration: none;
