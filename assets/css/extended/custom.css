@@ -167,11 +167,13 @@ body {
   margin: 8px 0;
   display: flex;
   align-items: center;
+  justify-content: space-between;   /* 新增：一个靠左，一个靠右 */
 }
 
 .article-list a:not(.category-tag) {
   display: block;
-  flex: 1;
+  flex: 0 1 auto;
+  max-width: 75%;
   min-width: 0;
   color: #5b7c99;
   text-decoration: none;
@@ -184,7 +186,14 @@ body {
 /* ==========================================================
    平板 / 手机
    ========================================================== */
+@media (max-width:768px) {
 
+  /* 首页、分类页卡片改两列 */
+  .home-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
 
 
 @media (max-width:768px) {
