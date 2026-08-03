@@ -44,4 +44,11 @@ home = ["HTML", "RSS", "JSON"]
   pattern = '/post/:slug/'
   [permalinks.target]
     kind = 'page'
+    path = '/short/**'
+
+[[permalinks]]
+  pattern = '/post/:slug/'
+  [permalinks.target]
+    kind = 'page'
+    path = '/serial/**'
 
