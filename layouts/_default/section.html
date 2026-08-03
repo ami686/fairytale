@@ -76,10 +76,7 @@
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 2px;
+  min-width: 0;
 }
 @media (max-width: 768px) {
   .article-card-title {
@@ -93,9 +90,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: block;
 }
 
 .article-card-date {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
   font-size: 13px;
   color: #999;
   margin-bottom: 8px;
@@ -238,8 +240,8 @@
             {{ end }}
           {{ end }}
           <div class="article-card">
-            <h3 class="article-card-title"><a href="{{ $current.RelPermalink }}">{{ $num }}. {{ $current.Title }}</a><a class="more-link" href="{{ $current.RelPermalink }}">更多»</a></h3>
-            <div class="article-card-date">{{ $current.Date.Format "2006-01-02" }}</div>
+            <h3 class="article-card-title"><a href="{{ $current.RelPermalink }}">{{ $num }}. {{ $current.Title }}</a></h3>
+            <div class="article-card-date"><span>{{ $current.Date.Format "2006-01-02" }}</span><a class="more-link" href="{{ $current.RelPermalink }}">更多»</a></div>
             <div class="article-card-summary">{{ $current.Summary | truncate 100 "..." }}</div>
           </div>
           {{ end }}
