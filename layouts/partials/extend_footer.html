@@ -49,15 +49,15 @@ html, body {
   overflow: visible;
 }
 
-/* 第1层：主面板，多栏瀑布流布局，避免矮卡片被同行卡片撑出空白 */
+/* 第1层：主面板，宽度按内容自适应，超过上限就换行收窄，不再固定宽度 */
 .menu > .menu-item.has-dropdown > .dropdown-menu,
 .menu > .menu-item.has-dropdown > .dropdown-columns {
   display: none;
   position: absolute;
   top: 100%;
   left: 50%;
-  transform: translateX(-50%);
-  width: min(94vw, 560px);
+  transform: translateX(-72%);
+  width: max-content;
   min-width: 0;
   max-width: 94vw;
   background: #fff;
@@ -74,7 +74,7 @@ html, body {
 .menu > .menu-item.has-dropdown.open > .dropdown-menu {
   display: block;
 }
-/* 自动分类菜单：展开时横向两栏，栏数固定由模板决定，不受内容多少影响 */
+/* 自动分类菜单：展开时横向两栏，栏宽跟随各自内容自适应，超出上限时靠换行收窄，不再强制等宽 */
 .menu > .menu-item.has-dropdown:hover > .dropdown-columns,
 .menu > .menu-item.has-dropdown.open > .dropdown-columns {
   display: flex;
@@ -82,7 +82,7 @@ html, body {
   align-items: flex-start;
 }
 .dropdown-columns .dropdown-col {
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -103,12 +103,12 @@ html, body {
 
 /* 顶级导航字号（首页/短篇/连载），覆盖主题 header.css 里 .menu a 的默认值 */
 .menu > .menu-item > a {
-  font-size: 18px;
+  font-size: 20px;
 }
 
 @media (max-width: 768px) {
   .menu > .menu-item > a {
-    font-size: 14px;
+    font-size: 15px;
   }
 }
 
@@ -118,14 +118,14 @@ html, body {
   color: #222;
   display: block;
   margin-bottom: 6px;
-  font-size: 18px;
+  font-size: 20px;
   border-bottom: 1px solid #e5e5e5;
   padding-bottom: 5px;
 }
 
 @media (max-width: 768px) {
 .dropdown-columns .dropdown-col > .menu-item > a {
-    font-size: 14px;
+    font-size: 15px;
   }
 }
 
@@ -172,27 +172,27 @@ html, body {
 /* 每往深一层，缩进 + 字号递减，最多控制到第4层，超过后不再继续缩小 */
 .menu .dropdown-menu .dropdown-menu .menu-item > a {
   font-weight: 400;
-  color: #555;
-  font-size: 17px;
+  color: #222;
+  font-size: 18px;
   padding-left: 10px;
 }
 
 @media (max-width: 768px) {
 .menu .dropdown-menu .dropdown-menu .menu-item > a {
-    font-size: 13px;
+    font-size: 14px;
   }
 }
 
 
 .menu .dropdown-menu .dropdown-menu .dropdown-menu .menu-item > a {
-  font-size: 16px;
-  color: #777;
+  font-size: 17px;
+  color: #222;
   padding-left: 20px;
 }
 
 @media (max-width: 768px) {
 .menu .dropdown-menu .dropdown-menu .dropdown-menu .menu-item > a {
-    font-size: 12px;
+    font-size: 13px;
   }
 }
 
