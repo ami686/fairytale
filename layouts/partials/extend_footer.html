@@ -106,6 +106,12 @@ html, body {
   font-size: 18px;
 }
 
+@media (max-width: 768px) {
+  .menu > .menu-item > a {
+    font-size: 14px;
+  }
+}
+
 /* 卡片标题（下拉内容第1层，即"童话""寓言"这些分组名） */
 .dropdown-columns .dropdown-col > .menu-item > a {
   font-weight: 700;
@@ -115,6 +121,12 @@ html, body {
   font-size: 18px;
   border-bottom: 1px solid #e5e5e5;
   padding-bottom: 5px;
+}
+
+@media (max-width: 768px) {
+.dropdown-columns .dropdown-col > .menu-item > a {
+    font-size: 14px;
+  }
 }
 
 /* 统一清除所有层级 ul/li 的默认圆点、内外边距，避免残留浏览器默认列表样式 */
@@ -140,10 +152,21 @@ html, body {
   padding: 0;
   margin: 0;
   background: none;
-  gap: 10px;
   min-width: 0;
   max-width: none;
   list-style: none;
+}
+
+/* 3级项目之间的间距（比如"格林童话大合集"和"安徒生童话"之间） */
+.menu .dropdown-menu .dropdown-menu {
+  gap: 18px;
+}
+
+/* 3级 → 4级：某个3级项目下面展开的4级列表，跟它自己文字之间的间距；
+   同时也是4级项目彼此之间的间距 */
+.menu .dropdown-menu .dropdown-menu .dropdown-menu {
+  margin-top: 15px;
+  gap: 13px;
 }
 
 /* 每往深一层，缩进 + 字号递减，最多控制到第4层，超过后不再继续缩小 */
@@ -153,11 +176,26 @@ html, body {
   font-size: 17px;
   padding-left: 10px;
 }
+
+@media (max-width: 768px) {
+.menu .dropdown-menu .dropdown-menu .menu-item > a {
+    font-size: 13px;
+  }
+}
+
+
 .menu .dropdown-menu .dropdown-menu .dropdown-menu .menu-item > a {
   font-size: 16px;
   color: #777;
   padding-left: 20px;
 }
+
+@media (max-width: 768px) {
+.menu .dropdown-menu .dropdown-menu .dropdown-menu .menu-item > a {
+    font-size: 12px;
+  }
+}
+
 .menu .dropdown-menu .dropdown-menu .dropdown-menu .dropdown-menu .menu-item > a {
   font-size: 15px;
   color: #999;
@@ -172,22 +210,6 @@ html, body {
   color: #0073aa !important;
 }
 
-/* 窄屏时面板不超出视口 */
-@media (max-width: 480px) {
-  .menu > .menu-item.has-dropdown > .dropdown-menu,
-  .menu > .menu-item.has-dropdown > .dropdown-columns {
-    padding: 12px 14px;
-  }
-  .menu > .menu-item.has-dropdown > .dropdown-menu {
-    gap: 8px 12px;
-  }
-  .dropdown-columns {
-    gap: 10px;
-  }
-  .menu .dropdown-menu .dropdown-menu .menu-item > a { font-size: 13px; padding-left: 8px; }
-  .menu .dropdown-menu .dropdown-menu .dropdown-menu .menu-item > a { font-size: 12.5px; padding-left: 16px; }
-  .menu .dropdown-menu .dropdown-menu .dropdown-menu .dropdown-menu .menu-item > a { font-size: 12px; padding-left: 24px; }
-}
 </style>
 
 <!-- 底部固定栏 -->
