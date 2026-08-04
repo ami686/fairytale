@@ -2,39 +2,9 @@
 document.addEventListener('DOMContentLoaded', function () {
   var isTouch = window.matchMedia('(hover: none)').matches;
 
-  // ===== Mega Menu 面板动态定位：防止任何一个菜单项展开时超出屏幕左右边界 =====
-  function adjustPanel(panel) {
-    if (!panel) return;
-    panel.style.left = '0px';
-    var margin = 12;
-    var rect = panel.getBoundingClientRect();
-    var overflowRight = rect.right - (window.innerWidth - margin);
-    if (overflowRight > 0) {
-      panel.style.left = (-overflowRight) + 'px';
-    }
-    rect = panel.getBoundingClientRect();
-    if (rect.left < margin) {
-      var current = parseFloat(panel.style.left) || 0;
-      panel.style.left = (current + (margin - rect.left)) + 'px';
-    }
-  }
-
-  document.querySelectorAll('.menu > .menu-item.has-dropdown').forEach(function (item) {
-    var panel = item.querySelector(':scope > .dropdown-menu');
-    if (!panel) return;
-    // 桌面端：hover 展开时纠正位置
-    item.addEventListener('mouseenter', function () {
-      requestAnimationFrame(function () { adjustPanel(panel); });
-    });
-  });
-
-  window.addEventListener('resize', function () {
-    document.querySelectorAll('.menu-item.has-dropdown.open > .dropdown-menu').forEach(adjustPanel);
-  });
-
   if (!isTouch) return;
 
-  // ===== 触摸屏：点击展开逻辑（原有） =====
+  // ===== 触摸屏：点击展开逻辑 =====
   document.querySelectorAll('.menu-item.has-dropdown > a').forEach(function (link) {
     link.addEventListener('click', function (e) {
       var parentLi = link.parentElement;
@@ -44,8 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
           li.classList.remove('open');
         });
         parentLi.classList.add('open');
-        var panel = parentLi.querySelector(':scope > .dropdown-menu');
-        setTimeout(function () { adjustPanel(panel); }, 0);
       }
     });
   });
@@ -74,55 +42,87 @@ html, body {
 /* 定位基准改为整个导航栏，让面板始终贴近 logo，不会跟着触发它的菜单项跑到屏幕外 */
 .header-nav {
   position: relative;
+  overflow: visible;
 }
 
-/* 第1层：主面板，横向铺开的多列 */
-.menu > .menu-item.has-dropdown > .dropdown-menu {
+.menu {
+  overflow: visible;
+}
+
+/* 第1层：主面板，多栏瀑布流布局，避免矮卡片被同行卡片撑出空白 */
+.menu > .menu-item.has-dropdown > .dropdown-menu,
+.menu > .menu-item.has-dropdown > .dropdown-columns {
   display: none;
   position: absolute;
   top: 100%;
-  left: 0;
-  min-width: 480px;
-  max-width: min(92vw, 720px);
-  max-height: 70vh;
-  overflow-y: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(94vw, 560px);
+  min-width: 0;
+  max-width: 94vw;
   background: #fff;
   border: 1px solid #eee;
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  padding: 20px 24px;
+  padding: 16px 18px;
   z-index: 100;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 12px 28px;
   list-style: none;
   box-sizing: border-box;
 }
+/* 手动配置的菜单：展开时纵向列表 */
 .menu > .menu-item.has-dropdown:hover > .dropdown-menu,
 .menu > .menu-item.has-dropdown.open > .dropdown-menu {
+  display: block;
+}
+/* 自动分类菜单：展开时横向两栏，栏数固定由模板决定，不受内容多少影响 */
+.menu > .menu-item.has-dropdown:hover > .dropdown-columns,
+.menu > .menu-item.has-dropdown.open > .dropdown-columns {
   display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.dropdown-columns .dropdown-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
 }
 
 /* 每一列的卡片外观（如"经典童话"一整列） */
-.menu > .menu-item.has-dropdown > .dropdown-menu > .menu-item {
-  min-width: 140px;
-  max-width: 200px;
+.dropdown-columns .dropdown-col > .menu-item {
+  width: 100%;
   background: #f7f8fa;
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 8px 12px;
   box-sizing: border-box;
+  overflow-wrap: break-word;
 }
 
 /* 列标题（分组名，第1层） */
-.menu > .menu-item.has-dropdown > .dropdown-menu > .menu-item > a {
+.dropdown-columns .dropdown-col > .menu-item > a {
   font-weight: 700;
   color: #222;
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-size: 15px;
   border-bottom: 1px solid #e5e5e5;
-  padding-bottom: 6px;
+  padding-bottom: 5px;
+}
+
+/* 统一清除所有层级 ul/li 的默认圆点、内外边距，避免残留浏览器默认列表样式 */
+.menu .dropdown-menu,
+.menu .dropdown-col,
+.menu .dropdown-columns {
+  list-style: none;
+}
+.menu .dropdown-menu li,
+.menu .dropdown-col li {
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
 }
 
 /* 列内容器：所有更深层级统一在这里纵向堆叠，取消一切绝对定位/浮动 */
@@ -133,10 +133,12 @@ html, body {
   box-shadow: none;
   border: none;
   padding: 0;
+  margin: 0;
   background: none;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
   max-width: none;
+  list-style: none;
 }
 
 /* 每往深一层，缩进 + 字号递减，最多控制到第4层，超过后不再继续缩小 */
@@ -144,33 +146,42 @@ html, body {
   font-weight: 400;
   color: #555;
   font-size: 14px;
-  padding-left: 0;
+  padding-left: 10px;
 }
 .menu .dropdown-menu .dropdown-menu .dropdown-menu .menu-item > a {
   font-size: 13px;
   color: #777;
-  padding-left: 10px;
+  padding-left: 20px;
 }
 .menu .dropdown-menu .dropdown-menu .dropdown-menu .dropdown-menu .menu-item > a {
   font-size: 12.5px;
   color: #999;
-  padding-left: 20px;
+  padding-left: 30px;
 }
+.menu .dropdown-menu a {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
 .menu .dropdown-menu a:hover {
   color: #0073aa !important;
 }
 
 /* 窄屏时面板不超出视口 */
 @media (max-width: 480px) {
+  .menu > .menu-item.has-dropdown > .dropdown-menu,
+  .menu > .menu-item.has-dropdown > .dropdown-columns {
+    padding: 12px 14px;
+  }
   .menu > .menu-item.has-dropdown > .dropdown-menu {
-    left: 0;
-    min-width: 90vw;
+    gap: 8px 12px;
+  }
+  .dropdown-columns {
     gap: 10px;
   }
-  .menu > .menu-item.has-dropdown > .dropdown-menu > .menu-item {
-    min-width: 100%;
-    max-width: 100%;
-  }
+  .menu .dropdown-menu .dropdown-menu .menu-item > a { font-size: 13px; padding-left: 8px; }
+  .menu .dropdown-menu .dropdown-menu .dropdown-menu .menu-item > a { font-size: 12.5px; padding-left: 16px; }
+  .menu .dropdown-menu .dropdown-menu .dropdown-menu .dropdown-menu .menu-item > a { font-size: 12px; padding-left: 24px; }
 }
 </style>
 
