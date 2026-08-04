@@ -6,7 +6,8 @@
     {{- $sectionPage := or .Page (site.GetPage .URL) }}
     {{- $menuChildren := .Children }}
     {{- $sectionChildren := and $sectionPage $sectionPage.Sections }}
-    {{- $hasChildren := or $menuChildren $sectionChildren }}
+    {{- $is_home := or (eq .URL "/") (eq .URL "") }}
+    {{- $hasChildren := and (or $menuChildren $sectionChildren) (not $is_home) }}
 
     <li class="menu-item{{ if $hasChildren }} has-dropdown{{ end }}">
         <a href="{{ .URL | absLangURL }}" title="{{ .Title | default .Name }} {{- cond $is_search (" (Alt + /)" | safeHTMLAttr) ("" | safeHTMLAttr ) }}"
@@ -33,14 +34,56 @@
             {{- end }}
         </a>
 
-        {{- if $menuChildren }}
-        <ul class="dropdown-menu">
-            {{- partial "menu-item.html" (dict "items" $menuChildren "currentPage" $currentPage) }}
-        </ul>
-        {{- else if $sectionChildren }}
-        <ul class="dropdown-menu">
-            {{- partial "section-item.html" (dict "sections" $sectionPage.Sections "depth" 1) }}
-        </ul>
+        {{- if $hasChildren }}
+            {{- if $menuChildren }}
+            <ul class="dropdown-menu">
+                {{- partial "menu-item.html" (dict "items" $menuChildren "currentPage" $currentPage) }}
+            </ul>
+            {{- else if $sectionChildren }}
+            {{- $secs := $sectionPage.Sections }}
+            {{- $order := slice }}
+            {{- with site.Data.menu_order }}
+                {{- with index . $sectionPage.Title }}
+                    {{- $order = . }}
+                {{- end }}
+            {{- end }}
+            {{- $col1 := slice }}
+            {{- $col2 := slice }}
+            {{- $usedTitles := slice }}
+            {{- range $order }}
+                {{- $t := .title }}
+                {{- $col := .col }}
+                {{- range $secs }}
+                    {{- if eq .Title $t }}
+                        {{- $usedTitles = $usedTitles | append .Title }}
+                        {{- if eq $col 2 }}
+                            {{- $col2 = $col2 | append . }}
+                        {{- else }}
+                            {{- $col1 = $col1 | append . }}
+                        {{- end }}
+                    {{- end }}
+                {{- end }}
+            {{- end }}
+            {{- range $secs }}
+                {{- if not (in $usedTitles .Title) }}
+                    {{- if le (len $col1) (len $col2) }}
+                        {{- $col1 = $col1 | append . }}
+                    {{- else }}
+                        {{- $col2 = $col2 | append . }}
+                    {{- end }}
+                {{- end }}
+            {{- end }}
+            <div class="dropdown-columns">
+                <ul class="dropdown-menu dropdown-col">
+                    {{- partial "section-item.html" (dict "sections" $col1 "depth" 1) }}
+                </ul>
+                {{- if $col2 }}
+                <ul class="dropdown-menu dropdown-col">
+                    {{- partial "section-item.html" (dict "sections" $col2 "depth" 1) }}
+                </ul>
+                {{- end }}
+            </div>
+            {{- end }}
         {{- end }}
     </li>
 {{- end }}
