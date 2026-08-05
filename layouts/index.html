@@ -8,30 +8,29 @@
   margin-left: 0;
   border-left: 2px solid #ccc;
   vertical-align: middle;
-  flex-shrink: 0;
+  flex-shrink: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.latest-list a:not(.category-tag) {
+  flex: 1 1 auto;
+  max-width: 70%;
+}
 @media (max-width: 1023px) {
   .category-tag {
-    max-width: 30%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     font-size: 12px;
   }
 }
 </style>
-
 <div class="page-layout">
   {{/* 左栏:内容区 */}}
   <div class="main-content">
     <div class="home-grid">
       <div class="category-card">
         <h3 class="card-title">最新文章</h3>
-        <ul class="article-list">
+        <ul class="article-list latest-list">
           {{ range first 3 .Site.RegularPages }}
           <li>
             <a href="{{ .RelPermalink }}">{{ .Title }}</a>
