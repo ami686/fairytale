@@ -20,6 +20,7 @@ name = "搜索"
 url = "/search/"
 weight = 4
 [params]
+author = "故事猫"
 ShowReadingTime = false
 ShowShareButtons = false
 ShowPostNavLinks = true
