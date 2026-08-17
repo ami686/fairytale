@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>新编寓言 on 故事猫</title>
+    <link>http://localhost:1313/category/new-fable/</link>
+    <description>Recent content in 新编寓言 on 故事猫</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 26 May 2025 10:29:11 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/category/new-fable/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>想飞的小狐狸</title>
+      <link>http://localhost:1313/post/315/</link>
+      <pubDate>Mon, 26 May 2025 10:29:11 +0000</pubDate>
+      <guid>http://localhost:1313/post/315/</guid>
+      <description>&lt;p&gt;小狐狸看到小鸟在天上飞，羡慕极了。&lt;/p&gt;
+&lt;p&gt;他跑到悬崖边，对其他小动物说：“听着，我要和小鸟一样飞下悬崖！”&lt;/p&gt;
+&lt;p&gt;小动物吓坏了，纷纷劝他说：“小狐狸，别乱来，你不是小鸟，也没有翅膀，怎么能飞呢？你会摔死的！”&lt;/p&gt;
+&lt;p&gt;但小狐狸不听，他学着小鸟的样子，从悬崖飞了下去。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>一千零一夜 on 故事猫</title>
+    <link>http://localhost:1313/category/1001-nights/</link>
+    <description>Recent content in 一千零一夜 on 故事猫</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 13 Sep 2024 12:34:34 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/category/1001-nights/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>阿里巴巴和四十大盗</title>
+      <link>http://localhost:1313/post/203/</link>
+      <pubDate>Fri, 13 Sep 2024 12:34:34 +0000</pubDate>
+      <guid>http://localhost:1313/post/203/</guid>
+      <description>&lt;p&gt;很久以前，在波斯国，有个叫阿里巴巴的男人。&lt;/p&gt;
+&lt;p&gt;他和妻子过着贫困的生活，只能靠打柴卫生。&lt;/p&gt;
+&lt;p&gt;阿里巴巴有个哥哥，因为娶了个有钱的寡妇，过着富足体面的生活。&lt;/p&gt;
+&lt;p&gt;有一天，阿里巴巴像往常一样上山砍柴，没想到看到一群强盗。&lt;/p&gt;
+&lt;p&gt;阿里巴巴赶紧爬上树藏起来。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>渔夫和魔鬼</title>
+      <link>http://localhost:1313/post/94/</link>
+      <pubDate>Sat, 09 Mar 2024 13:21:06 +0000</pubDate>
+      <guid>http://localhost:1313/post/94/</guid>
+      <description>&lt;p&gt;从前，有个渔夫，他每天都会到海边打渔。&lt;/p&gt;
+&lt;p&gt;有一天，他和往常一样，往海里撒下网，可是撒了几次网，捞上来的都不是鱼，而是些乱七八糟的东西。&lt;/p&gt;
+&lt;p&gt;再一次收网时，网里还是没有鱼，只有一个瓶子。&lt;/p&gt;
+&lt;p&gt;渔夫很失望，他自言自语地说：“看来今天老天爷不想让我捞到鱼，我先看看这瓶子里有什么吧，说不定有惊喜呢！”&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>阿拉丁和神灯</title>
+      <link>http://localhost:1313/post/77/</link>
+      <pubDate>Tue, 05 Mar 2024 07:59:21 +0000</pubDate>
+      <guid>http://localhost:1313/post/77/</guid>
+      <description>&lt;p&gt;从前，有个人叫阿拉丁，他有两件宝物。&lt;/p&gt;
+&lt;p&gt;一个是一盏油灯，只要擦一下，就会出现一个巨人。&lt;/p&gt;
+&lt;p&gt;一个是一枚魔戒，只要擦一下，就会出现一个精灵。&lt;/p&gt;
+&lt;p&gt;只要阿拉丁要求他们做什么，他们都会满足他，因为，谁得到神灯和魔戒，谁就是他们的主人。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
