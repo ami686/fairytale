@@ -1,0 +1,64 @@
+baseURL = "https://1001k.com/"
+languageCode = "zh-cn"
+hasCJKLanguage = true
+summaryLength = 100
+title = "故事猫"
+theme = "PaperMod"
+defaultContentLanguage = "zh-cn"
+sectionPagesMenu = "main"
+[pagination]
+pagerSize = 10
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+[menu]
+[[menu.main]]
+name = "首页"
+url = "/"
+weight = 1
+[[menu.main]]
+name = "搜索"
+url = "/search/"
+weight = 4
+[params]
+author = "故事猫"
+ShowReadingTime = false
+ShowShareButtons = false
+ShowPostNavLinks = true
+ShowBreadCrumbs = true
+ShowCodeCopyButtons = false
+disableThemeToggle = true
+
+[params.label]
+text = "故事猫"
+icon = "/images/logo.png"
+iconHeight = 30
+
+[params.assets]
+  logo = "images/logo.png"
+
+[outputs]
+home = ["HTML", "RSS", "JSON"]
+
+[[permalinks]]
+  pattern = '/category/:sections[last]/'
+  [permalinks.target]
+    kind = 'section'
+
+[[permalinks]]
+  pattern = '/video/:slug/'
+  [permalinks.target]
+    kind = 'page'
+    path = '/video/**'
+
+[[permalinks]]
+  pattern = '/search/'
+  [permalinks.target]
+    kind = 'page'
+    path = '/search'
+
+[[permalinks]]
+  pattern = '/post/:slug/'
+  [permalinks.target]
+    kind = 'page'
