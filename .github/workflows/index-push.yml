@@ -20,7 +20,7 @@ jobs:
         run: hugo --minify
 
       - name: 恢复上次的 sitemap 记录
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: last-sitemap.xml
           key: sitemap-cache-v1
