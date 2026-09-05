@@ -26,26 +26,37 @@ jobs:
           key: sitemap-cache-v1
           restore-keys: sitemap-cache-v1
 
-      - name: 对比新旧 sitemap,找出变更 URL
+      - name: 对比新旧 sitemap,找出变更 URL(含内容更新)
         id: diff
         run: |
           NEW=public/sitemap.xml
           OLD=last-sitemap.xml
 
-          # 提取所有 <loc> URL
-          grep -oP '(?<=<loc>).*?(?=</loc>)' "$NEW" | sort > new_urls.txt
+          # 提取 "url|lastmod" 格式,一行代表一篇文章的当前状态
+          # 这样不仅能发现新增的 URL,也能发现同一个 URL 但 lastmod 变了(即内容被修改过)的情况
+          extract_url_lastmod() {
+            awk '
+              /<loc>/ { gsub(/<\/?loc>/, ""); loc=$0 }
+              /<lastmod>/ { gsub(/<\/?lastmod>/, ""); lastmod=$0; print loc"|"lastmod }
+            ' "$1" | sort
+          }
+
+          extract_url_lastmod "$NEW" > new_urls.txt
 
           if [ -f "$OLD" ]; then
-            grep -oP '(?<=<loc>).*?(?=</loc>)' "$OLD" | sort > old_urls.txt
+            extract_url_lastmod "$OLD" > old_urls.txt
           else
             touch old_urls.txt
           fi
 
-          # 找出新增/变化的 URL
-          comm -13 old_urls.txt new_urls.txt > changed_urls.txt
+          # 找出新增的行,以及 lastmod 发生变化的行
+          comm -13 old_urls.txt new_urls.txt > changed_lines.txt
+
+          # 从变更行里只取出 URL 部分,供后面推送使用
+          cut -d'|' -f1 changed_lines.txt | sort -u > changed_urls.txt
 
           COUNT=$(wc -l < changed_urls.txt)
-          echo "发现 $COUNT 个变更"
+          echo "发现 $COUNT 个变更(含新增文章和内容更新)"
           cat changed_urls.txt
 
       - name: 推送到 IndexNow(必应/Yandex等)
