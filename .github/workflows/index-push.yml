@@ -2,6 +2,12 @@ name: 推送更新到搜索引擎
 
 on:
   workflow_dispatch:  # 只能手动触发
+    inputs:
+      dry_run:
+        description: '仅预览(勾选=只看变更列表,不实际推送;不勾选=正式推送)'
+        required: true
+        type: boolean
+        default: true
 
 jobs:
   push:
@@ -56,11 +62,18 @@ jobs:
           cut -d'|' -f1 changed_lines.txt | sort -u > changed_urls.txt
 
           COUNT=$(wc -l < changed_urls.txt)
+          echo "================================"
           echo "发现 $COUNT 个变更(含新增文章和内容更新)"
+          echo "================================"
           cat changed_urls.txt
+          echo "================================"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "当前是【仅预览】模式,以上是本次会被推送的 URL 列表。"
+            echo "确认无误后,请重新手动触发一次本 workflow,并把 dry_run 取消勾选,才会真正推送。"
+          fi
 
       - name: 推送到 IndexNow(必应/Yandex等)
-        if: success()
+        if: ${{ success() && inputs.dry_run == false }}
         run: |
           if [ -s changed_urls.txt ]; then
             URLS=$(cat changed_urls.txt | jq -R . | jq -s .)
@@ -72,15 +85,17 @@ jobs:
           fi
 
       - name: Ping Google(提醒它来重新抓取 sitemap)
-        if: success()
+        if: ${{ success() && inputs.dry_run == false }}
         run: |
           curl -s "https://www.google.com/ping?sitemap=https://1001k.com/sitemap.xml"
           echo "已 ping Google"
 
-      - name: 保存本次 sitemap,供下次对比
+      - name: 保存本次 sitemap,供下次对比(仅预览模式不保存,避免影响下次真实对比)
+        if: ${{ inputs.dry_run == false }}
         run: cp public/sitemap.xml last-sitemap.xml
 
-      - name: 更新缓存
+      - name: 更新缓存(仅预览模式不更新)
+        if: ${{ inputs.dry_run == false }}
         uses: actions/cache/save@v4
         with:
           path: last-sitemap.xml
