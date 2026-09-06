@@ -1,7 +1,7 @@
 name: 推送更新到搜索引擎
 
 on:
-  workflow_dispatch:  # 只能手动触发
+  workflow_dispatch:  # 手动触发
 
 jobs:
   push:
@@ -24,28 +24,56 @@ jobs:
         with:
           path: last-sitemap.xml
           key: sitemap-cache-v1
-          restore-keys: sitemap-cache-v1
+          restore-keys: |
+            sitemap-cache-v1
 
-      - name: 对比新旧 sitemap,找出变更 URL
+      - name: 对比新旧 sitemap,找出新增与修改的 URL
         id: diff
         run: |
-          NEW=public/sitemap.xml
-          OLD=last-sitemap.xml
+          NEW="public/sitemap.xml"
+          OLD="last-sitemap.xml"
 
-          # 提取所有 <loc> URL
-          grep -oP '(?<=<loc>).*?(?=</loc>)' "$NEW" | sort > new_urls.txt
+          # 提取 <url> 里的 <loc> 和 <lastmod> 并拼接成 "URL|LASTMOD" 格式进行排序保存
+          python3 -c "
+          import xml.etree.ElementTree as ET
+          import os
 
-          if [ -f "$OLD" ]; then
-            grep -oP '(?<=<loc>).*?(?=</loc>)' "$OLD" | sort > old_urls.txt
-          else
-            touch old_urls.txt
-          fi
+          def parse_sitemap(file_path, out_file):
+              if not os.path.exists(file_path):
+                  open(out_file, 'w').close()
+                  return
+              try:
+                  tree = ET.parse(file_path)
+                  root = tree.getroot()
+                  ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+                  records = []
+                  for url in root.findall('sm:url', ns):
+                      loc = url.find('sm:loc', ns)
+                      lastmod = url.find('sm:lastmod', ns)
+                      loc_txt = loc.text.strip() if loc is not None and loc.text else ''
+                      mod_txt = lastmod.text.strip() if lastmod is not None and lastmod.text else ''
+                      if loc_txt:
+                          records.append(f'{loc_txt}|{mod_txt}')
+                  records.sort()
+                  with open(out_file, 'w') as f:
+                      for r in records:
+                          f.write(r + '\n')
+              except Exception as e:
+                  print(f'解析 XML 失败: {e}')
+                  open(out_file, 'w').close()
 
-          # 找出新增/变化的 URL
-          comm -13 old_urls.txt new_urls.txt > changed_urls.txt
+          parse_sitemap('$NEW', 'new_entries.txt')
+          parse_sitemap('$OLD', 'old_entries.txt')
+          "
+
+          # 找出 new_entries 中有但 old_entries 中没有的记录（包含新增 URL 或修改了 lastmod 的 URL）
+          comm -13 old_entries.txt new_entries.txt > changed_entries.txt
+
+          # 提取出纯 URL
+          cut -d'|' -f1 changed_entries.txt | sort -u > changed_urls.txt
 
           COUNT=$(wc -l < changed_urls.txt)
-          echo "发现 $COUNT 个变更"
+          echo "发现 $COUNT 个新增/修改的网页 URL"
           cat changed_urls.txt
 
       - name: 推送到 IndexNow(必应/Yandex等)
@@ -54,17 +82,11 @@ jobs:
           if [ -s changed_urls.txt ]; then
             URLS=$(cat changed_urls.txt | jq -R . | jq -s .)
             curl -X POST "https://api.indexnow.org/indexnow" \
-              -H "Content-Type: application/json" \
-              -d "{\"host\":\"1001k.com\",\"key\":\"hugo2026cfIndexNowKey8x3qz9m\",\"keyLocation\":\"https://1001k.com/hugo2026cfIndexNowKey8x3qz9m.txt\",\"urlList\":$URLS}"
+                 -H "Content-Type: application/json" \
+                 -d "{\"host\":\"1001k.com\",\"key\":\"hugo2026cfIndexNowKey8x3qz9m\",\"keyLocation\":\"https://1001k.com/hugo2026cfIndexNowKey8x3qz9m.txt\",\"urlList\":$URLS}"
           else
             echo "没有变更,跳过推送"
           fi
-
-      - name: Ping Google(提醒它来重新抓取 sitemap)
-        if: success()
-        run: |
-          curl -s "https://www.google.com/ping?sitemap=https://1001k.com/sitemap.xml"
-          echo "已 ping Google"
 
       - name: 保存本次 sitemap,供下次对比
         run: cp public/sitemap.xml last-sitemap.xml
