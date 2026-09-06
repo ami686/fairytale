@@ -2,15 +2,6 @@ name: 推送更新到搜索引擎
 
 on:
   workflow_dispatch:  # 只能手动触发
-    inputs:
-      dry_run:
-        description: '仅预览(勾选=只看变更列表,不实际推送;不勾选=正式推送)'
-        required: true
-        type: boolean
-        default: true
-
-permissions:
-  contents: write  # 需要写权限,才能把 last-sitemap.xml 提交回仓库
 
 jobs:
   push:
@@ -18,8 +9,6 @@ jobs:
     steps:
       - name: 检出仓库
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # 拉取完整提交历史,供 enableGitInfo 计算真实的 lastmod 使用
 
       - name: 安装 Hugo
         uses: peaceiris/actions-hugo@v3
@@ -28,60 +17,39 @@ jobs:
           extended: true
 
       - name: 构建站点(生成最新 sitemap)
-        # 关键修复:必须加 --enableGitInfo,否则 lastmod 会退回用文件的 mtime。
-        # CI 环境每次 checkout 都会刷新所有文件的 mtime,导致全站文章被误判为"刚改过"。
-        # 加上这个参数后,Hugo 会改用 git 提交记录里的真实提交时间计算 lastmod。
-        run: hugo --minify --enableGitInfo
+        run: hugo --minify
 
-      - name: 对比新旧 sitemap,找出变更 URL(含内容更新)
+      - name: 恢复上次的 sitemap 记录
+        uses: actions/cache/restore@v4
+        with:
+          path: last-sitemap.xml
+          key: sitemap-cache-v1
+          restore-keys: sitemap-cache-v1
+
+      - name: 对比新旧 sitemap,找出变更 URL
         id: diff
         run: |
           NEW=public/sitemap.xml
           OLD=last-sitemap.xml
 
-          # 提取 "url|lastmod" 格式,一行代表一篇文章的当前状态
-          # hugo --minify 会把 sitemap.xml 压缩成没有换行的一整行,
-          # 所以这里先按 </url> 把它拆回一行一个 <url>...</url> 块,
-          # 再从每一块里分别抓 loc 和 lastmod,避免把整份 sitemap 误判成一条记录
-          extract_url_lastmod() {
-            sed 's/<\/url>/<\/url>\n/g' "$1" \
-              | grep '<url>' \
-              | while IFS= read -r line; do
-                  loc=$(echo "$line" | grep -oP '(?<=<loc>).*?(?=</loc>)')
-                  lastmod=$(echo "$line" | grep -oP '(?<=<lastmod>).*?(?=</lastmod>)')
-                  if [ -n "$loc" ]; then
-                    echo "$loc|$lastmod"
-                  fi
-                done | sort
-          }
-
-          extract_url_lastmod "$NEW" > new_urls.txt
+          # 提取所有 <loc> URL
+          grep -oP '(?<=<loc>).*?(?=</loc>)' "$NEW" | sort > new_urls.txt
 
           if [ -f "$OLD" ]; then
-            extract_url_lastmod "$OLD" > old_urls.txt
+            grep -oP '(?<=<loc>).*?(?=</loc>)' "$OLD" | sort > old_urls.txt
           else
             touch old_urls.txt
           fi
 
-          # 找出新增的行,以及 lastmod 发生变化的行
-          comm -13 old_urls.txt new_urls.txt > changed_lines.txt
-
-          # 从变更行里只取出 URL 部分,供后面推送使用
-          cut -d'|' -f1 changed_lines.txt | sort -u > changed_urls.txt
+          # 找出新增/变化的 URL
+          comm -13 old_urls.txt new_urls.txt > changed_urls.txt
 
           COUNT=$(wc -l < changed_urls.txt)
-          echo "================================"
-          echo "发现 $COUNT 个变更(含新增文章和内容更新)"
-          echo "================================"
+          echo "发现 $COUNT 个变更"
           cat changed_urls.txt
-          echo "================================"
-          if [ "${{ inputs.dry_run }}" = "true" ]; then
-            echo "当前是【仅预览】模式,以上是本次会被推送的 URL 列表。"
-            echo "确认无误后,请重新手动触发一次本 workflow,并把 dry_run 取消勾选,才会真正推送。"
-          fi
 
       - name: 推送到 IndexNow(必应/Yandex等)
-        if: ${{ success() && inputs.dry_run == false }}
+        if: success()
         run: |
           if [ -s changed_urls.txt ]; then
             URLS=$(cat changed_urls.txt | jq -R . | jq -s .)
@@ -93,25 +61,16 @@ jobs:
           fi
 
       - name: Ping Google(提醒它来重新抓取 sitemap)
-        if: ${{ success() && inputs.dry_run == false }}
+        if: success()
         run: |
           curl -s "https://www.google.com/ping?sitemap=https://1001k.com/sitemap.xml"
           echo "已 ping Google"
 
-      - name: 保存本次 sitemap 状态,提交回仓库供下次对比
-        # 改用"提交回仓库"而不是 actions/cache:
-        # cache 的 key 一旦写入就不可覆盖,之前用 run_id 做后缀会导致缓存越攒越多且难以精确复用。
-        # 直接把 last-sitemap.xml 作为仓库里的普通文件管理,状态永久保留、可追溯、不受 cache 过期影响。
-        # 仅在正式推送(非 dry_run)且确实存在变更时才提交,避免无意义的空提交。
-        if: ${{ success() && inputs.dry_run == false }}
-        run: |
-          if [ -s changed_urls.txt ]; then
-            cp public/sitemap.xml last-sitemap.xml
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add last-sitemap.xml
-            git commit -m "chore: 更新 sitemap 推送状态记录 [skip ci]"
-            git push
-          else
-            echo "没有变更,无需更新状态记录"
-          fi
+      - name: 保存本次 sitemap,供下次对比
+        run: cp public/sitemap.xml last-sitemap.xml
+
+      - name: 更新缓存
+        uses: actions/cache/save@v4
+        with:
+          path: last-sitemap.xml
+          key: sitemap-cache-v1-${{ github.run_id }}
