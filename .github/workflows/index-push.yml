@@ -39,12 +39,19 @@ jobs:
           OLD=last-sitemap.xml
 
           # 提取 "url|lastmod" 格式,一行代表一篇文章的当前状态
-          # 这样不仅能发现新增的 URL,也能发现同一个 URL 但 lastmod 变了(即内容被修改过)的情况
+          # hugo --minify 会把 sitemap.xml 压缩成没有换行的一整行,
+          # 所以这里先按 </url> 把它拆回一行一个 <url>...</url> 块,
+          # 再从每一块里分别抓 loc 和 lastmod,避免把整份 sitemap 误判成一条记录
           extract_url_lastmod() {
-            awk '
-              /<loc>/ { gsub(/<\/?loc>/, ""); loc=$0 }
-              /<lastmod>/ { gsub(/<\/?lastmod>/, ""); lastmod=$0; print loc"|"lastmod }
-            ' "$1" | sort
+            sed 's/<\/url>/<\/url>\n/g' "$1" \
+              | grep '<url>' \
+              | while IFS= read -r line; do
+                  loc=$(echo "$line" | grep -oP '(?<=<loc>).*?(?=</loc>)')
+                  lastmod=$(echo "$line" | grep -oP '(?<=<lastmod>).*?(?=</lastmod>)')
+                  if [ -n "$loc" ]; then
+                    echo "$loc|$lastmod"
+                  fi
+                done | sort
           }
 
           extract_url_lastmod "$NEW" > new_urls.txt
