@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: 检出仓库
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 拉取完整提交历史,否则 enableGitInfo 算出的 lastmod 会全站错乱
 
       - name: 安装 Hugo
         uses: peaceiris/actions-hugo@v3
