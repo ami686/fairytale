@@ -9,6 +9,9 @@ on:
         type: boolean
         default: true
 
+permissions:
+  contents: write  # 需要写权限,才能把 last-sitemap.xml 提交回仓库
+
 jobs:
   push:
     runs-on: ubuntu-latest
@@ -16,7 +19,7 @@ jobs:
       - name: 检出仓库
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 拉取完整提交历史,否则 enableGitInfo 算出的 lastmod 会全站错乱
+          fetch-depth: 0  # 拉取完整提交历史,供 enableGitInfo 计算真实的 lastmod 使用
 
       - name: 安装 Hugo
         uses: peaceiris/actions-hugo@v3
@@ -25,14 +28,10 @@ jobs:
           extended: true
 
       - name: 构建站点(生成最新 sitemap)
-        run: hugo --minify
-
-      - name: 恢复上次的 sitemap 记录
-        uses: actions/cache/restore@v4
-        with:
-          path: last-sitemap.xml
-          key: sitemap-cache-v1
-          restore-keys: sitemap-cache-v1
+        # 关键修复:必须加 --enableGitInfo,否则 lastmod 会退回用文件的 mtime。
+        # CI 环境每次 checkout 都会刷新所有文件的 mtime,导致全站文章被误判为"刚改过"。
+        # 加上这个参数后,Hugo 会改用 git 提交记录里的真实提交时间计算 lastmod。
+        run: hugo --minify --enableGitInfo
 
       - name: 对比新旧 sitemap,找出变更 URL(含内容更新)
         id: diff
@@ -99,13 +98,20 @@ jobs:
           curl -s "https://www.google.com/ping?sitemap=https://1001k.com/sitemap.xml"
           echo "已 ping Google"
 
-      - name: 保存本次 sitemap,供下次对比(仅预览模式不保存,避免影响下次真实对比)
-        if: ${{ inputs.dry_run == false }}
-        run: cp public/sitemap.xml last-sitemap.xml
-
-      - name: 更新缓存(仅预览模式不更新)
-        if: ${{ inputs.dry_run == false }}
-        uses: actions/cache/save@v4
-        with:
-          path: last-sitemap.xml
-          key: sitemap-cache-v1-${{ github.run_id }}
+      - name: 保存本次 sitemap 状态,提交回仓库供下次对比
+        # 改用"提交回仓库"而不是 actions/cache:
+        # cache 的 key 一旦写入就不可覆盖,之前用 run_id 做后缀会导致缓存越攒越多且难以精确复用。
+        # 直接把 last-sitemap.xml 作为仓库里的普通文件管理,状态永久保留、可追溯、不受 cache 过期影响。
+        # 仅在正式推送(非 dry_run)且确实存在变更时才提交,避免无意义的空提交。
+        if: ${{ success() && inputs.dry_run == false }}
+        run: |
+          if [ -s changed_urls.txt ]; then
+            cp public/sitemap.xml last-sitemap.xml
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add last-sitemap.xml
+            git commit -m "chore: 更新 sitemap 推送状态记录 [skip ci]"
+            git push
+          else
+            echo "没有变更,无需更新状态记录"
+          fi
