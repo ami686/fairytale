@@ -24,6 +24,7 @@ url = "/search/"
 weight = 4
 [params]
 author = "故事猫"
+description = ""
 ShowReadingTime = false
 ShowShareButtons = false
 ShowPostNavLinks = true
@@ -38,6 +39,10 @@ iconHeight = 30
 
 [params.assets]
   logo = "images/logo.png"
+
+[params.schema]
+  # publisherType = "Organization"   # 默认就是 Organization，不写这行也一样，除非你想改成 "Person"
+  sameAs = []   # 目前没有可关联的社交账号，留空即可；以后有了再往数组里加链接，例如 ["https://weibo.com/xxx"]
 
 [outputs]
 home = ["HTML", "RSS", "JSON"]
