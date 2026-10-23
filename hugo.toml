@@ -48,7 +48,7 @@ iconHeight = 30
 home = ["HTML", "RSS", "JSON"]
 
 [[permalinks]]
-  pattern = '/category/:sectionslugs[last]/'
+  pattern = '/category/:sections[last]/'
   [permalinks.target]
     kind = 'section'
 
