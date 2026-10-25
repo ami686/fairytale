@@ -9,3 +9,5 @@ new_post_合并版排除video.py
 .hugo_build.lock
 resources/
 add_lastmod.py
+add_schema加系列.py
+new_post.py

@@ -1,3 +1,4 @@
 ---
 title: "狼，老虎和七只小羊"
+schema: series
 ---

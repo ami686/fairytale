@@ -1,3 +1,4 @@
 ---
 title: "白雪公主和七个小矮人"
+schema: series
 ---

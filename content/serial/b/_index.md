@@ -1,3 +1,4 @@
 ---
 title: "白雪公主和王后"
+schema: series
 ---
