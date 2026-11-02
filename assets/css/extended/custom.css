@@ -30,7 +30,7 @@ body {
 /* 一级列表：缩小默认缩进 */
 .article-content ol,
 .article-content ul {
-  padding-left: 1em !important;
+  padding-left: 1.5em !important;
 }
 
 /* 二级列表：只比一级再缩一点 */
@@ -38,6 +38,21 @@ body {
 .article-content ul ul {
   padding-left: 0.7em !important;
   list-style-type: disc !important;
+}
+
+/* ==========================================================
+   正文标题间距（h2 / h3）
+   ========================================================== */
+.article-content h2 {
+  font-size: 1.1em;
+  margin-top: 1.2em;
+  margin-bottom: 0.7em;
+}
+
+.article-content h3 {
+  font-size: 1em;
+  margin-top: 1em;
+  margin-bottom: 0.6em;
 }
 
 .breadcrumbs a {
